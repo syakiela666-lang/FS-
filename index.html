@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Futures Structure Scanner</title>
+<style>
+  :root { --bg:#0b0e14; --card:#131822; --line:#232b3a; --tx:#e7ebf3; --dim:#8b94a7; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--tx); font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  .wrap { max-width:680px; margin:0 auto; padding:16px 12px 48px; }
+  h1 { font-size:18px; letter-spacing:.3px; }
+  .sub { color:var(--dim); font-size:12px; margin-top:2px; }
+  #barwrap { height:4px; background:var(--line); border-radius:2px; margin:14px 0 6px; overflow:hidden; display:none; }
+  #barwrap.on { display:block; }
+  #bar { height:100%; width:0%; background:#22c55e; transition:width .2s; }
+  #status { font-size:12px; color:var(--dim); min-height:18px; }
+  #err { display:none; background:#3b1219; border:1px solid #7f1d2d; color:#fda4af; padding:10px 12px; border-radius:8px; margin-top:10px; font-size:13px; }
+  #err.on { display:block; }
+  .controls { display:flex; flex-direction:column; gap:8px; margin-top:14px; }
+  #search { background:var(--card); border:1px solid var(--line); color:var(--tx); border-radius:8px; padding:9px 12px; font-size:14px; outline:none; }
+  #search:focus { border-color:#3b82f6; }
+  #chips { display:flex; gap:6px; flex-wrap:wrap; }
+  .chip { background:var(--card); border:1px solid var(--line); color:var(--dim); border-radius:999px; padding:5px 11px; font-size:12px; cursor:pointer; }
+  .chip.on { color:#0b0e14; background:#e7ebf3; border-color:#e7ebf3; font-weight:600; }
+  #rescan { background:#22c55e; color:#052e12; border:0; border-radius:8px; padding:9px 16px; font-weight:700; font-size:13px; cursor:pointer; margin-top:2px; }
+  #rescan:disabled { opacity:.5; cursor:default; }
+  #count { color:var(--dim); font-size:12px; margin:12px 2px 8px; }
+  .row { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin-bottom:8px; }
+  .l1 { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .sym { font-weight:700; font-size:15px; letter-spacing:.3px; }
+  .badge { font-size:11px; font-weight:600; padding:2px 8px; border-radius:6px; border:1px solid; }
+  .vol { margin-left:auto; color:var(--dim); font-size:12px; }
+  .l2 { display:flex; gap:10px; flex-wrap:wrap; margin-top:6px; color:var(--dim); font-size:12.5px; }
+  .l2 b { color:var(--tx); font-weight:600; }
+  .up { color:#22c55e; } .down { color:#f87171; } .div { color:#fbbf24; font-weight:600; }
+  .s0 { color:#9ca3af; border-color:#4b5563; }
+  .s1 { color:#a78bfa; border-color:#7c5cd6; }
+  .s2 { color:#22d3ee; border-color:#0e7490; }
+  .s3 { color:#fbbf24; border-color:#b45309; }
+  .s4 { color:#4ade80; border-color:#15803d; }
+  .s5 { color:#052e12; background:#4ade80; border-color:#4ade80; }
+  .s6 { color:#2dd4bf; border-color:#0f766e; }
+  .rose { color:#052e12; background:#86efac; border-color:#86efac; }
+  footer { margin-top:22px; color:#5b6472; font-size:11.5px; line-height:1.5; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Futures Structure Scanner</h1>
+  <div class="sub">Scan struktur 1D semua perp USDT Binance — cari koin yang strukturnya lagi berubah</div>
+  <div id="barwrap"><div id="bar"></div></div>
+  <div id="status"></div>
+  <div id="err"></div>
+  <div class="controls">
+    <input id="search" placeholder="Cari koin… (mis. BTC)" autocomplete="off">
+    <div id="chips"></div>
+    <button id="rescan">Scan ulang</button>
+  </div>
+  <div id="count"></div>
+  <div id="list"></div>
+  <footer>
+    Tahap: Basing → HL Terbentuk → Menuju Break → Break → Retest = urutan perkembangan struktur sebelum rally.
+    Sinyal struktur bukan jaminan — selalu pakai stop dan ukur risiko sendiri.<br>
+    Data: fapi.binance.com (publik) · hanya candle 1D yang sudah close · hasil di-cache 12 jam di browser.
+  </footer>
+</div>
+<script src="scanner.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

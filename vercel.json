@@ -1,0 +1,9 @@
+{
+  "regions": ["sin1"],
+  "functions": {
+    "api/*.js": { "maxDuration": 60 }
+  },
+  "crons": [
+    { "path": "/api/cron-telegram", "schedule": "5 0 * * *" }
+  ]
+}
