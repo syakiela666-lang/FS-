@@ -15,7 +15,8 @@
     { id: 'entry', label: 'Entry (4–5)',     test: function (r) { return r.stage >= 4 && r.stage <= 5; } },
     { id: 'watch', label: 'Watchlist (2–3)', test: function (r) { return r.stage >= 2 && r.stage <= 3; } },
     { id: 'base',  label: 'Basing (1)',      test: function (r) { return r.stage === 1; } },
-    { id: 'up',    label: 'Uptrend (6)',     test: function (r) { return r.stage === 6; } }
+    { id: 'up',    label: 'Uptrend (6)',     test: function (r) { return r.stage === 6; } },
+    { id: 'rs',    label: 'RS kuat (≥+' + S.RS_STRONG + ')', test: function (r) { return r.rs30 != null && r.rs30 >= S.RS_STRONG; } }
   ];
 
   var data = null, filter = 'all', query = '';
@@ -53,6 +54,10 @@
     if (r.oi7d != null) {
       parts.push('OI 7h <b class="' + (r.oi7d >= 0 ? 'up' : 'down') + '">' + (r.oi7d >= 0 ? '+' : '') + r.oi7d.toFixed(0) + '%</b>');
     }
+    if (r.rs30 != null) {
+      var rsCls = r.rs30 >= S.RS_STRONG ? 'up' : (r.rs30 <= -S.RS_STRONG ? 'down' : '');
+      parts.push('RS <b' + (rsCls ? ' class="' + rsCls + '"' : '') + '>' + (r.rs30 >= 0 ? '+' : '') + r.rs30 + '</b>');
+    }
     if (r.change24h > 0 && r.oi7d != null && r.oi7d <= -3) {
       parts.push('<span class="div">⚠️ short covering</span>');
     }
@@ -75,9 +80,12 @@
     var rows = data.results.filter(function (r) {
       return f.test(r) && (!q || r.symbol.indexOf(q) !== -1);
     });
+    var btcTxt = data.btc
+      ? ' · BTC: ' + data.btc.stageLabel + ' (30h ' + (data.btc.perf30d >= 0 ? '+' : '') + data.btc.perf30d + '%)'
+      : '';
     $('count').textContent = rows.length + ' koin ditampilkan · dari ' + data.results.length +
       ' koin ter-scan (total ' + data.total + ' perp) · scan ' + fmtTime(data.scannedAt) +
-      ' · mode: ' + (data.mode === 'server' ? 'server Vercel' : 'browser langsung');
+      ' · mode: ' + (data.mode === 'server' ? 'server Vercel' : 'browser langsung') + btcTxt;
     $('list').innerHTML = rows.map(rowHTML).join('') ||
       '<div class="row" style="color:var(--dim)">Gak ada koin di filter ini.</div>';
   }

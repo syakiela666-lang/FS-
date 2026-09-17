@@ -38,6 +38,7 @@ function flagsLine(r) {
     s.push('FR ' + fr.toFixed(3) + '%' + (fr >= HOT_FUNDING * 100 ? ' ⚠️' : ''));
   }
   if (r.oi7d != null) s.push('OI 7h ' + (r.oi7d >= 0 ? '+' : '') + r.oi7d.toFixed(0) + '%');
+  if (r.rs30 != null) s.push('RS ' + (r.rs30 >= 0 ? '+' : '') + r.rs30);
   return s.length ? ' · ' + s.join(' · ') : '';
 }
 
@@ -74,6 +75,13 @@ function formatMessage(data) {
   });
 
   let out = '📊 <b>Structure Scan</b> — ' + tgl + '\n';
+  // Regime market dari struktur BTC: alt jarang rally sebelum BTC-nya break.
+  if (data.btc) {
+    const s = data.btc.stage;
+    const mode = s >= 4 ? 'risk-on' : (s <= 1 ? 'risk-off — alt ikut BTC dulu' : 'transisi');
+    out += '🏛 BTC: <b>' + data.btc.stageLabel + '</b> (30h ' +
+      (data.btc.perf30d >= 0 ? '+' : '') + data.btc.perf30d + '%) · ' + mode + '\n';
+  }
 
   if (zone.length) {
     out += '\n🎯 <b>Entry zone (tahap 3–5):</b>\n';

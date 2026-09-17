@@ -255,7 +255,11 @@
                     lastLL: res.lastLL,
                     daysSinceBreak: res.daysSinceBreak,
                     quoteVolume: +t.quoteVolume,
-                    change24h: +t.priceChangePercent
+                    change24h: +t.priceChangePercent,
+                    // Kinerja 30 hari (%), dipakai untuk RS vs BTC di akhir scan.
+                    perf30d: candles.length >= 31
+                      ? Math.round((candles[candles.length - 1].c / candles[candles.length - 31].c - 1) * 1000) / 10
+                      : null
                   });
                 }
               }).catch(function () { failed++; });
@@ -307,12 +311,25 @@
           return Promise.all(ws);
         })
         .then(function () {
+          // RS 30 hari = kinerja koin dikurangi kinerja BTC, plus regime market
+          // dari posisi struktur BTC (alt rally biasanya menunggu BTC break dulu).
+          var btc = null;
+          for (var i = 0; i < results.length; i++) {
+            if (results[i].symbol === 'BTCUSDT') { btc = results[i]; break; }
+          }
+          var btcPerf = btc && btc.perf30d != null ? btc.perf30d : null;
+          results.forEach(function (x) {
+            x.rs30 = (btcPerf != null && x.perf30d != null)
+              ? Math.round((x.perf30d - btcPerf) * 10) / 10
+              : null;
+          });
           results.sort(function (a, b) { return b.stage - a.stage || b.quoteVolume - a.quoteVolume; });
           return {
             scannedAt: Date.now(),
             total: total,
             failed: failed,
             minVol: minVol,
+            btc: btc ? { stage: btc.stage, stageLabel: btc.stageLabel, perf30d: btc.perf30d } : null,
             results: results
           };
         });
@@ -322,6 +339,7 @@
   var api = {
     STAGES: STAGES,
     HOT_FUNDING: 0.001, // 0,1% per 8 jam = ambang "funding panas" (rawan long squeeze)
+    RS_STRONG: 10,      // ambang RS kuat: koin mengungguli BTC ≥10 poin persentase (30 hari)
     scanAll: scanAll,
     classify: classify,
     calcRSI: calcRSI,
