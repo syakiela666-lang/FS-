@@ -245,11 +245,18 @@
               p = fetchKlines(sym).then(function (candles) {
                 var res = classify(candles);
                 if (res.stage >= 0) {
+                  // "Pandangan kemarin": klasifikasi tanpa candle terakhir. Dari sini
+                  // kita tahu koin naik tahap pada daily close terbaru — tanpa perlu
+                  // menyimpan snapshot antar-hari (diff lintas device, gratis).
+                  var prev = candles.length > 61 ? classify(candles.slice(0, -1)) : null;
+                  var prevStage = prev && prev.stage >= 0 ? prev.stage : null;
                   results.push({
                     symbol: sym,
                     price: candles[candles.length - 1].c,
                     stage: res.stage,
                     stageLabel: STAGES[res.stage].label,
+                    prevStage: prevStage,
+                    rosePrev: prevStage != null && res.stage > prevStage,
                     rsi: res.rsi,
                     divergence: res.divergence,
                     freshHL: res.freshHL,

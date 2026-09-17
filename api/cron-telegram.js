@@ -83,6 +83,20 @@ function formatMessage(data) {
       (data.btc.perf30d >= 0 ? '+' : '') + data.btc.perf30d + '%) · ' + mode + '\n';
   }
 
+  // Koin yang naik tahap pada daily close terakhir (dihitung ulang dari data,
+  // bukan dari snapshot — jadi valid lintas device dan untuk cron).
+  const rose = res.filter(r => r.rosePrev && r.stage >= 2)
+    .sort((a, b) => b.stage - a.stage);
+  if (rose.length) {
+    out += '\n⬆️ <b>Naik tahap kemarin:</b>\n';
+    const shown = rose.slice(0, 8);
+    out += shown.map(r =>
+      '• <b>' + r.symbol + '</b>: ' + (scanner.STAGES[r.prevStage] || { label: '-' }).label +
+      ' → <b>' + r.stageLabel + '</b>'
+    ).join('\n');
+    if (rose.length > shown.length) out += '\n• …dan ' + (rose.length - shown.length) + ' lainnya';
+  }
+
   if (zone.length) {
     out += '\n🎯 <b>Entry zone (tahap 3–5):</b>\n';
     const shown = zone.slice(0, MAX_COINS);

@@ -11,7 +11,7 @@
 
   var FILTERS = [
     { id: 'all',   label: 'Semua',           test: function () { return true; } },
-    { id: 'rose',  label: '🆕 Naik tahap',   test: function (r) { return !!r.rose; } },
+    { id: 'rose',  label: '🆕 Naik tahap',   test: function (r) { return !!(r.rose || r.rosePrev); } },
     { id: 'entry', label: 'Entry (4–5)',     test: function (r) { return r.stage >= 4 && r.stage <= 5; } },
     { id: 'watch', label: 'Watchlist (2–3)', test: function (r) { return r.stage >= 2 && r.stage <= 3; } },
     { id: 'base',  label: 'Basing (1)',      test: function (r) { return r.stage === 1; } },
@@ -67,7 +67,8 @@
     return '<div class="row">' +
       '<div class="l1"><span class="sym">' + r.symbol + '</span>' +
       '<span class="badge s' + r.stage + '" title="' + st.hint + '">' + st.label + '</span>' +
-      (r.rose ? '<span class="badge rose">↑' + (r.roseBy > 1 ? r.roseBy : '') + '</span>' : '') +
+      (r.rose || r.rosePrev ? '<span class="badge rose">↑' +
+        ((r.rose ? r.roseBy : r.stage - r.prevStage) > 1 ? (r.rose ? r.roseBy : r.stage - r.prevStage) : '') + '</span>' : '') +
       '<span class="vol">' + fmtVol(r.quoteVolume) + '</span></div>' +
       '<div class="l2">' + parts.join(' · ') + '</div></div>';
   }
