@@ -148,9 +148,9 @@ async function handler(req, res) {
     return;
   }
 
-  let message;
+  let message, data = null;
   try {
-    const data = await scanner.scanAll({ concurrency: 20 });
+    data = await scanner.scanAll({ concurrency: 20 });
     data.mode = 'server';
     message = formatMessage(data);
   } catch (eScan) {
