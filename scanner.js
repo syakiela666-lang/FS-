@@ -33,7 +33,10 @@
     return getJSON(BASE + '/fapi/v1/exchangeInfo').then(function (info) {
       return info.symbols
         .filter(function (s) {
-          return s.status === 'TRADING' && s.quoteAsset === 'USDT' && s.contractType === 'PERPETUAL';
+          // Stablecoin/asset pegged (USDC, FDUSD, USD1, AEUR, ...) gak punya
+          // "struktur" — sinyalnya murni noise, jadi dikecualikan.
+          return s.status === 'TRADING' && s.quoteAsset === 'USDT' &&
+            s.contractType === 'PERPETUAL' && !/(USD|EUR)/.test(s.baseAsset);
         })
         .map(function (s) { return s.symbol; });
     });
